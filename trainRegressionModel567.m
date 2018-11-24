@@ -1,4 +1,4 @@
-function [trainedModel, validationRMSE] = trainRegressionModel(trainingData)
+function [trainedModel, validationRMSE] = trainRegressionModel567(trainingData)
 % [trainedModel, validationRMSE] = trainRegressionModel(trainingData)
 % returns a trained regression model and its RMSE. This code recreates the
 % model trained in Regression Learner app. Use the generated code to
@@ -41,9 +41,9 @@ function [trainedModel, validationRMSE] = trainRegressionModel(trainingData)
 % This code processes the data into the right shape for training the
 % model.
 inputTable = trainingData;
-predictorNames = {'tMask1', 'tMask2', 'tMask3', 'tMask4', 'tMask5', 'tMask6', 'tMask7', 'tMask8', 'tMask9', 'tMask10', 'tMask11'};
+predictorNames = {'FixAcid', 'VolAcid', 'CitAcid', 'ResSugar', 'Chlorides', 'FreeS02', 'TotalS02', 'Density', 'pH', 'Sulphates', 'Alcohol'};
 predictors = inputTable(:, predictorNames);
-response = inputTable.tMask12;
+response = inputTable.Quality;
 isCategoricalPredictor = [false, false, false, false, false, false, false, false, false, false, false];
 
 % Train a regression model
@@ -61,7 +61,7 @@ gpPredictFcn = @(x) predict(regressionGP, x);
 trainedModel.predictFcn = @(x) gpPredictFcn(predictorExtractionFcn(x));
 
 % Add additional fields to the result struct
-trainedModel.RequiredVariables = {'tMask1', 'tMask2', 'tMask3', 'tMask4', 'tMask5', 'tMask6', 'tMask7', 'tMask8', 'tMask9', 'tMask10', 'tMask11'};
+trainedModel.RequiredVariables = {'FixAcid', 'VolAcid', 'CitAcid', 'ResSugar', 'Chlorides', 'FreeS02', 'TotalS02', 'Density', 'pH', 'Sulphates', 'Alcohol'};
 trainedModel.RegressionGP = regressionGP;
 trainedModel.About = 'This struct is a trained model exported from Regression Learner R2018b.';
 trainedModel.HowToPredict = sprintf('To make predictions on a new table, T, use: \n  yfit = c.predictFcn(T) \nreplacing ''c'' with the name of the variable that is this struct, e.g. ''trainedModel''. \n \nThe table, T, must contain the variables returned by: \n  c.RequiredVariables \nVariable formats (e.g. matrix/vector, datatype) must match the original training data. \nAdditional variables are ignored. \n \nFor more information, see <a href="matlab:helpview(fullfile(docroot, ''stats'', ''stats.map''), ''appregression_exportmodeltoworkspace'')">How to predict using an exported model</a>.');
@@ -70,13 +70,13 @@ trainedModel.HowToPredict = sprintf('To make predictions on a new table, T, use:
 % This code processes the data into the right shape for training the
 % model.
 inputTable = trainingData;
-predictorNames = {'tMask1', 'tMask2', 'tMask3', 'tMask4', 'tMask5', 'tMask6', 'tMask7', 'tMask8', 'tMask9', 'tMask10', 'tMask11'};
+predictorNames = {'FixAcid', 'VolAcid', 'CitAcid', 'ResSugar', 'Chlorides', 'FreeS02', 'TotalS02', 'Density', 'pH', 'Sulphates', 'Alcohol'};
 predictors = inputTable(:, predictorNames);
-response = inputTable.tMask12;
+response = inputTable.Quality;
 isCategoricalPredictor = [false, false, false, false, false, false, false, false, false, false, false];
 
 % Perform cross-validation
-partitionedModel = crossval(trainedModel.RegressionGP, 'KFold', 10);
+partitionedModel = crossval(trainedModel.RegressionGP, 'KFold', 5);
 
 % Compute validation predictions
 validationPredictions = kfoldPredict(partitionedModel);
