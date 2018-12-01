@@ -1,16 +1,40 @@
 %% load
 load('wine.mat');
+load('wineTest.mat');
+load('Qualityans.mat');
 % WhiteWine(1,:) = [];
+
+%% Test 1000
+load('Qualityans.mat')
+ans2 = xlsread('Myans.xlsx');
+error2 = Quailty100 - ans2;
+MSE2 = mean(error2.^2);
+RMSE2 = sqrt(MSE2);
+
+ans1 = xlsread('WinePredict.xlsx');
+error1 = Quailty100 - ans1;
+MSE1 = mean(error1.^2);
+RMSE1 = sqrt(MSE1);
 
 %% 5 6 7
 tabulate(WhiteWine.Quality);
 t = table2array(WhiteWine);
 
-upper5 = WhiteWine.Quality >= 5;
-until7 = WhiteWine.Quality <= 7;
-mask = upper5 & until7;
-tMask = t(mask, :);
-tblMask = array2table(tMask);
+for r = 1:width
+    if t(r,end) < 5
+        t(r,end) = 5;
+    end
+    if t(r,end) > 7
+        t(r,end) = 7;
+    end
+end
+
+% upper5 = WhiteWine.Quality >= 5;
+% until7 = WhiteWine.Quality <= 7;
+% mask = upper5 & until7;
+% tMask = t(mask, :);
+% tblMask = array2table(tMask);
+tblMask = array2table(t);
 
 tblMask.Properties.VariableNames{1} = 'FixAcid';
 tblMask.Properties.VariableNames{2} = 'VolAcid';
@@ -25,9 +49,72 @@ tblMask.Properties.VariableNames{10} = 'Sulphates';
 tblMask.Properties.VariableNames{11} = 'Alcohol';
 tblMask.Properties.VariableNames{12} = 'Quality';
 
+%% hold out 0.25 Test
+szTrain = size(dataTrain);
+szValid = size(dataValid);
+
+widthTrain = szTrain(1,1);
+heightTrain = szTrain(1,2);
+
+widthValid = szValid(1,1);
+heightValid = szValid(1,2);
+
+for r = 1:widthTrain
+    if classTrain(r,1) < 5
+        classTrain(r,1) = 5;
+    end
+    if classTrain(r,1) > 7
+        classTrain(r,1) = 7;
+    end
+end
+
+data = [dataTrain classTrain];
+dataTable = array2table(data);
+dataTable.Properties.VariableNames{1} = 'FixAcid';
+dataTable.Properties.VariableNames{2} = 'VolAcid';
+dataTable.Properties.VariableNames{3} = 'CitAcid';
+dataTable.Properties.VariableNames{4} = 'ResSugar';
+dataTable.Properties.VariableNames{5} = 'Chlorides';
+dataTable.Properties.VariableNames{6} = 'FreeS02';
+dataTable.Properties.VariableNames{7} = 'TotalS02';
+dataTable.Properties.VariableNames{8} = 'Density';
+dataTable.Properties.VariableNames{9} = 'pH';
+dataTable.Properties.VariableNames{10} = 'Sulphates';
+dataTable.Properties.VariableNames{11} = 'Alcohol';
+dataTable.Properties.VariableNames{12} = 'Quality';
+
+%%
+dataValidTable = array2table(dataValid);
+dataValidTable.Properties.VariableNames{1} = 'FixAcid';
+dataValidTable.Properties.VariableNames{2} = 'VolAcid';
+dataValidTable.Properties.VariableNames{3} = 'CitAcid';
+dataValidTable.Properties.VariableNames{4} = 'ResSugar';
+dataValidTable.Properties.VariableNames{5} = 'Chlorides';
+dataValidTable.Properties.VariableNames{6} = 'FreeS02';
+dataValidTable.Properties.VariableNames{7} = 'TotalS02';
+dataValidTable.Properties.VariableNames{8} = 'Density';
+dataValidTable.Properties.VariableNames{9} = 'pH';
+dataValidTable.Properties.VariableNames{10} = 'Sulphates';
+dataValidTable.Properties.VariableNames{11} = 'Alcohol';
+dataValidTable.Properties.VariableNames{12} = 'Quality';
+
+
+
+% mdl = trainRegressionModel567(dataTable);
+
+% mdl = trainRegressionModel567(tblMask);
+% pred = mdl.predictFcn(WhiteWineTest);
+% error = pred - Quailty100;
+% MSE = mean(error.^2);
+% RMSE = sqrt(MSE);
+
 %% extract
 response = WhiteWine.Quality;
 measurement = WhiteWine{:, 1:11};
+
+sz = size(measurement);
+width = sz(1,1);
+height = sz(1,2);
 
 %% trainRegressionModel567 test
 % model567 = trainRegressionModel567(tblMask);
@@ -38,12 +125,12 @@ measurement = WhiteWine{:, 1:11};
 % RMSE = sqrt(MSE);
 
 %% cvpartition
-% c = cvpartition(response, 'HoldOut', 0.3);
-%
-% dataTrain = measurements(c.training, :);
-% dataValid = measurements(c.test, :);
-% classTrain = response(c.training);
-% classValid = response(c.test);
+c = cvpartition(response, 'HoldOut', 0.25);
+
+dataTrain = measurement(c.training, :);
+dataValid = measurement(c.test, :);
+classTrain = response(c.training);
+classValid = response(c.test);
 
 %% mean test
 % m = WhiteWine(:, 1:3);
@@ -54,9 +141,6 @@ measurement = WhiteWine{:, 1:11};
 % acidMean = [meanAcid wine4toend];
 
 %% min max test
-sz = size(measurement);
-width = sz(1,1);
-height = sz(1,2);
 m = mean(measurement, 1);
 tm = zeros(width,height);
 for r = 1:width
