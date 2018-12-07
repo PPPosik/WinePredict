@@ -1,8 +1,126 @@
 %% load
 load('wine.mat');
-load('wineTest.mat');
-load('Qualityans.mat');
+% load('wineTest.mat');
+% load('Qualityans.mat');
 % WhiteWine(1,:) = [];
+
+%% cvpartition
+response = WhiteWine.Quality;
+measurement = WhiteWine{:, 1:11};
+
+sz = size(measurement);
+width = sz(1,1);
+height = sz(1,2);
+
+c = cvpartition(response, 'HoldOut', 0.2);
+
+dataTrain = measurement(c.training, :);
+dataValid = measurement(c.test, :);
+classTrain = response(c.training);
+classValid = response(c.test);
+
+%% normalization
+nrTrain = normalize(dataTrain, 'range');
+nrValid = normalize(dataValid, 'range');
+
+%% normalization all
+arr = table2array(WhiteWine);
+arrResponse = arr(:, 12);
+arrMes = arr(:, 1:11);
+nrArrMes = normalize(arrMes, 'range');
+nrWine = [nrArrMes arrResponse];
+% y1 = x1 * dataValid(:,1);
+% y2 = x2 * dataValid(:,2);
+% y3 = x3 * dataValid(:,3);
+% y4 = x4 * dataValid(:,4);
+% y5 = x5 * dataValid(:,5);
+% y6 = x6 * dataValid(:,6);
+% y7 = x7 * dataValid(:,7);
+% y8 = x8 * dataValid(:,8);
+% y9 = x9 * dataValid(:,9);
+% y10 = x10 * dataValid(:,10);
+% y11 = x11 * dataValid(:,11);
+% ttt = [y1 y2 y3 y4 y5 y6 y7 y8 y9 y10 y11];
+nrTbWine = array2table(nrWine);
+% 
+% nrTbWine.Properties.VariableNames{1} = 'FixAcid';
+% nrTbWine.Properties.VariableNames{2} = 'VolAcid';
+% nrTbWine.Properties.VariableNames{3} = 'CitAcid';
+% nrTbWine.Properties.VariableNames{4} = 'ResSugar';
+% nrTbWine.Properties.VariableNames{5} = 'Chlorides';
+% nrTbWine.Properties.VariableNames{6} = 'FreeS02';
+% nrTbWine.Properties.VariableNames{7} = 'TotalS02';
+% nrTbWine.Properties.VariableNames{8} = 'Density';
+% nrTbWine.Properties.VariableNames{9} = 'pH';
+% nrTbWine.Properties.VariableNames{10} = 'Sulphates';
+% nrTbWine.Properties.VariableNames{11} = 'Alcohol';
+% nrTbWine.Properties.VariableNames{12} = 'Quality';
+
+%% OLS
+x1 = lscov(WhiteWine.FixAcid, WhiteWine.Quality);
+a1 = x1 * WhiteWine.FixAcid;
+x2 = lscov(WhiteWine.VolAcid, WhiteWine.Quality);
+a2 = x2 * WhiteWine.VolAcid;
+x3 = lscov(WhiteWine.CitAcid, WhiteWine.Quality);
+a3 = x3 * WhiteWine.CitAcid;
+x4 = lscov(WhiteWine.ResSugar, WhiteWine.Quality);
+a4 = x4 * WhiteWine.ResSugar;
+x5 = lscov(WhiteWine.Chlorides, WhiteWine.Quality);
+a5 = x5 * WhiteWine.Chlorides;
+x6 = lscov(WhiteWine.FreeS02, WhiteWine.Quality);
+a6 = x6 * WhiteWine.FreeS02;
+x7 = lscov(WhiteWine.TotalS02, WhiteWine.Quality);
+a7 = x7 * WhiteWine.TotalS02;
+x8 = lscov(WhiteWine.Density, WhiteWine.Quality);
+a8 = x8 * WhiteWine.Density;
+x9 = lscov(WhiteWine.pH, WhiteWine.Quality);
+a9 = x9 * WhiteWine.pH;
+x10 = lscov(WhiteWine.Sulphates, WhiteWine.Quality);
+a10 = x10 * WhiteWine.Sulphates;
+x11 = lscov(WhiteWine.Alcohol, WhiteWine.Quality);
+a11 = x11 * WhiteWine.Alcohol;
+
+% x1 = lscov(dataTrain(:,1), classTrain(:,1));
+% a1 = x1 * dataTrain(:,1);
+% x2 = lscov(dataTrain(:,2), classTrain(:,1));
+% a2 = x2 * dataTrain(:,2);
+% x3 = lscov(dataTrain(:,3), classTrain(:,1));
+% a3 = x3 * dataTrain(:,3);
+% x4 = lscov(dataTrain(:,4), classTrain(:,1));
+% a4 = x4 * dataTrain(:,4);
+% x5 = lscov(dataTrain(:,5), classTrain(:,1));
+% a5 = x5 * dataTrain(:,5);
+% x6 = lscov(dataTrain(:,6), classTrain(:,1));
+% a6 = x6 * dataTrain(:,6);
+% x7 = lscov(dataTrain(:,7), classTrain(:,1));
+% a7 = x7 * dataTrain(:,7);
+% x8 = lscov(dataTrain(:,8), classTrain(:,1));
+% a8 = x8 * dataTrain(:,8);
+% x9 = lscov(dataTrain(:,9), classTrain(:,1));
+% a9 = x9 * dataTrain(:,9);
+% x10 = lscov(dataTrain(:,10), classTrain(:,1));
+% a10 = x10 * dataTrain(:,10);
+% x11 = lscov(dataTrain(:,11), classTrain(:,1));
+% a11 = x11 * dataTrain(:,11);
+
+% arrOls = [a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 classTrain];
+arrOls = [a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 response];
+
+tbOls = array2table(arrOls);
+tbOls.Properties.VariableNames{1} = 'FixAcid';
+tbOls.Properties.VariableNames{2} = 'VolAcid';
+tbOls.Properties.VariableNames{3} = 'CitAcid';
+tbOls.Properties.VariableNames{4} = 'ResSugar';
+tbOls.Properties.VariableNames{5} = 'Chlorides';
+tbOls.Properties.VariableNames{6} = 'FreeS02';
+tbOls.Properties.VariableNames{7} = 'TotalS02';
+tbOls.Properties.VariableNames{8} = 'Density';
+tbOls.Properties.VariableNames{9} = 'pH';
+tbOls.Properties.VariableNames{10} = 'Sulphates';
+tbOls.Properties.VariableNames{11} = 'Alcohol';
+tbOls.Properties.VariableNames{12} = 'Quality';
+%% box plot
+boxplot(nrArrMes);
 
 %% Test 1000
 load('Qualityans.mat')
@@ -50,38 +168,42 @@ tblMask.Properties.VariableNames{11} = 'Alcohol';
 tblMask.Properties.VariableNames{12} = 'Quality';
 
 %% hold out 0.25 Test
-szTrain = size(dataTrain);
-szValid = size(dataValid);
+% szTrain = size(dataTrain);
+% szValid = size(dataValid);
+% 
+% widthTrain = szTrain(1,1);
+% heightTrain = szTrain(1,2);
+% 
+% widthValid = szValid(1,1);
+% heightValid = szValid(1,2);
+% 
+% for r = 1:widthTrain
+%     if classTrain(r,1) < 5
+%         classTrain(r,1) = 5;
+%     end
+%     if classTrain(r,1) > 7
+%         classTrain(r,1) = 7;
+%     end
+% end
 
-widthTrain = szTrain(1,1);
-heightTrain = szTrain(1,2);
-
-widthValid = szValid(1,1);
-heightValid = szValid(1,2);
-
-for r = 1:widthTrain
-    if classTrain(r,1) < 5
-        classTrain(r,1) = 5;
-    end
-    if classTrain(r,1) > 7
-        classTrain(r,1) = 7;
-    end
-end
-
-data = [dataTrain classTrain];
+data = [dataValid(:,2) dataValid(:,3) dataValid(:,10) dataValid(:,11)];
 dataTable = array2table(data);
-dataTable.Properties.VariableNames{1} = 'FixAcid';
-dataTable.Properties.VariableNames{2} = 'VolAcid';
-dataTable.Properties.VariableNames{3} = 'CitAcid';
-dataTable.Properties.VariableNames{4} = 'ResSugar';
-dataTable.Properties.VariableNames{5} = 'Chlorides';
-dataTable.Properties.VariableNames{6} = 'FreeS02';
-dataTable.Properties.VariableNames{7} = 'TotalS02';
-dataTable.Properties.VariableNames{8} = 'Density';
-dataTable.Properties.VariableNames{9} = 'pH';
-dataTable.Properties.VariableNames{10} = 'Sulphates';
-dataTable.Properties.VariableNames{11} = 'Alcohol';
-dataTable.Properties.VariableNames{12} = 'Quality';
+dataTable.Properties.VariableNames{1} = 'VolAcid';
+dataTable.Properties.VariableNames{2} = 'CitAcid';
+dataTable.Properties.VariableNames{3} = 'Sulphates';
+dataTable.Properties.VariableNames{4} = 'Alcohol';
+% dataTable.Properties.VariableNames{1} = 'FixAcid';
+% dataTable.Properties.VariableNames{2} = 'VolAcid';
+% dataTable.Properties.VariableNames{3} = 'CitAcid';
+% dataTable.Properties.VariableNames{4} = 'ResSugar';
+% dataTable.Properties.VariableNames{5} = 'Chlorides';
+% dataTable.Properties.VariableNames{6} = 'FreeS02';
+% dataTable.Properties.VariableNames{7} = 'TotalS02';
+% dataTable.Properties.VariableNames{8} = 'Density';
+% dataTable.Properties.VariableNames{9} = 'pH';
+% dataTable.Properties.VariableNames{10} = 'Sulphates';
+% dataTable.Properties.VariableNames{11} = 'Alcohol';
+% dataTable.Properties.VariableNames{12} = 'Quality';
 
 %%
 dataValidTable = array2table(dataValid);
@@ -108,14 +230,6 @@ dataValidTable.Properties.VariableNames{12} = 'Quality';
 % MSE = mean(error.^2);
 % RMSE = sqrt(MSE);
 
-%% extract
-response = WhiteWine.Quality;
-measurement = WhiteWine{:, 1:11};
-
-sz = size(measurement);
-width = sz(1,1);
-height = sz(1,2);
-
 %% trainRegressionModel567 test
 % model567 = trainRegressionModel567(tblMask);
 % load('model567.mat');
@@ -123,14 +237,6 @@ height = sz(1,2);
 % error = yfit - WhiteWine.Quality;
 % MSE = mean(error.^2);
 % RMSE = sqrt(MSE);
-
-%% cvpartition
-c = cvpartition(response, 'HoldOut', 0.25);
-
-dataTrain = measurement(c.training, :);
-dataValid = measurement(c.test, :);
-classTrain = response(c.training);
-classValid = response(c.test);
 
 %% mean test
 % m = WhiteWine(:, 1:3);
@@ -244,7 +350,7 @@ wineMinMax.Properties.VariableNames{12} = 'Quality';
 % histogram(WhiteWine.Quality)
 % xlabel('Quality')
 
-plotMatrix = measurementTmp;
+plotMatrix = nrWine;
 subplot(3,4,1)
 histogram(plotMatrix(:,1))
 xlabel('FixAcid')

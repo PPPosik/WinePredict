@@ -22,14 +22,14 @@ widthValid = szValid(1,1);
 heightValid = szValid(1,2);
 
 %% residual sugar log10
-for r=1:widthTrain
-%     wine.ResSugar(r) = log10(WhiteWine.ResSugar(r));
-      dataTrain(r,4) = log10(dataTrain(r,4));
-end
-
-for r=1:widthValid
-    dataValid(r,4) = log10(dataValid(r,4));
-end
+% for r=1:widthTrain
+% %     wine.ResSugar(r) = log10(WhiteWine.ResSugar(r));
+%       dataTrain(r,4) = log10(dataTrain(r,4));
+% end
+% 
+% for r=1:widthValid
+%     dataValid(r,4) = log10(dataValid(r,4));
+% end
 
 %% outliers
 % 요소별로 다르게 지워보기
