@@ -58,15 +58,15 @@ end
 % dataValid.Acid = (dataValid.FixAcid + dataValid.VolAcid + dataValid.CitAcid) / 3;
 
 %%
-[quality index] = sort(WhiteWine.Quality);
-
-arr = zeros(4898, 12);
-for r=1:4898
-    for c=1:11
-        arr(r,c) = table2array(WhiteWine(index(r), c));
-    end
-    arr(r,12) = quality(r);
-end
+% [quality index] = sort(WhiteWine.Quality);
+% 
+% arr = zeros(4898, 12);
+% for r=1:4898
+%     for c=1:11
+%         arr(r,c) = table2array(WhiteWine(index(r), c));
+%     end
+%     arr(r,12) = quality(r);
+% end
 
 
 
